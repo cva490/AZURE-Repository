@@ -223,10 +223,12 @@
 		],
 		"parameters": {
 			"DBName": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "ADFLearning"
 			},
 			"FolderName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "onpremisefiles"
 			}
 		},
 		"annotations": []
