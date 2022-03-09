@@ -16,11 +16,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "BlobOnpremiseFiles",
-						"type": "DatasetReference",
-						"parameters": {
-							"OnpremiseFolder": "onpremisefiles "
-						}
+						"referenceName": "BlobOnpremiseFilechecking",
+						"type": "DatasetReference"
 					},
 					"fieldList": [
 						"childItems"
@@ -32,6 +29,82 @@
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
 					}
+				}
+			},
+			{
+				"name": "Looping for each file",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "CheckingFileExistance",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('CheckingFileExistance').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "MovingDataBlobtoAzureDB",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"fileListPath": {
+											"value": "@item().Name",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "BlobOnpremiseFilechecking",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSQLDB",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
 				}
 			}
 		],
