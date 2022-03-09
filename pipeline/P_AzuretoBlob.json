@@ -1,6 +1,211 @@
 {
 	"name": "P_AzuretoBlob",
 	"properties": {
+		"activities": [
+			{
+				"name": "checkingazuredata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSQLDB",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "checking",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "checkingazuredata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('checkingazuredata').output.RecordCount,0)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "movingdatatosnowflakeblob",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "select  [S No#], \nconvert(date,[Value Date],105) as [Value Date], \nconvert(date,[Transaction Date],105) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "S No#",
+												"type": "Int32",
+												"physicalType": "int"
+											},
+											"sink": {
+												"name": "S No#",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Value Date",
+												"type": "DateTime",
+												"physicalType": "date"
+											},
+											"sink": {
+												"name": "Value Date",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Transaction Date",
+												"type": "DateTime",
+												"physicalType": "date"
+											},
+											"sink": {
+												"name": "Transaction Date",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Cheque Number",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "Cheque Number",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Transaction Remarks",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "Transaction Remarks",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Withdrawal Amount (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Withdrawal Amount (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Deposit Amount (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Deposit Amount (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Balance (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Balance (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSQLDB",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "SnowflakeBolbFiles",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
 		"annotations": []
 	}
 }
