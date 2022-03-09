@@ -1,0 +1,6 @@
+{
+	"name": "OPI-DMRO-Onpremise-IR",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
