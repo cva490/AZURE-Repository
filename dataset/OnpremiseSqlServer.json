@@ -3,7 +3,18 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "OPI_DMRO_Onpremise_SQL_Connection",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"OnpremiseDBName": {
+					"value": "@dataset().dsOnPremiseDBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"dsOnPremiseDBName": {
+				"type": "String"
+			}
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
