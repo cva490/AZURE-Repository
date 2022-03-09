@@ -1,0 +1,12 @@
+{
+	"name": "OnpremiseSqlServer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OPI_DMRO_Onpremise_SQL_Connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}
