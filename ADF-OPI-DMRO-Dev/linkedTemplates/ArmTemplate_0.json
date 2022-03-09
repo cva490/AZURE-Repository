@@ -164,6 +164,186 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BlobOnpremiseFilechecking')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": "onpremisefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobOnpremiseFileslooping')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": "onpremisefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/archievingfiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": "archievefolder"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SnowflakeBolbFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": "snowflakeinputfiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/OnpremiseSqlServer')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -190,6 +370,48 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Onpremise_SQL_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSQLDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Azure_DB_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "BanktransactionDetail"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSQLDBQuery')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Azure_DB_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "BanktransactionDetail"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
 			]
 		},
 		{
@@ -436,6 +658,666 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/OnpremiseSqlServer')]",
 				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_BlobtoAzureDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CheckingFileExistance",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "BlobOnpremiseFilechecking",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Looping for each file",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "CheckingFileExistance",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('CheckingFileExistance').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "MovingDataBlobtoAzureDB",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "S No#",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "S No#",
+														"type": "Int32",
+														"physicalType": "int"
+													}
+												},
+												{
+													"source": {
+														"name": "Value Date",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Value Date",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Transaction Date",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Transaction Date",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Cheque Number",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Cheque Number",
+														"type": "String",
+														"physicalType": "varchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Transaction Remarks",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Transaction Remarks",
+														"type": "String",
+														"physicalType": "varchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Withdrawal Amount (INR )",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Withdrawal Amount (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													}
+												},
+												{
+													"source": {
+														"name": "Deposit Amount (INR )",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Deposit Amount (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													}
+												},
+												{
+													"source": {
+														"name": "Balance (INR )",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Balance (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "BlobOnpremiseFilechecking",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "AzureSQLDB",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Archieving files",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "MovingDataBlobtoAzureDB",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "BlobOnpremiseFileslooping",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "archievingfiles",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Delete1",
+									"type": "Delete",
+									"dependsOn": [
+										{
+											"activity": "Archieving files",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "BlobOnpremiseFileslooping",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"logStorageSettings": {
+											"linkedServiceName": {
+												"referenceName": "OPI_DMRO_Blob_Connection",
+												"type": "LinkedServiceReference"
+											},
+											"path": "deletedfileslogging"
+										},
+										"enableLogging": true,
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"wildcardFileName": {
+												"value": "@{concat('Daytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')}",
+												"type": "Expression"
+											},
+											"enablePartitionDiscovery": false
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFilechecking')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSQLDB')]",
+				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFileslooping')]",
+				"[concat(variables('factoryId'), '/datasets/archievingfiles')]",
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_AzuretoBlob')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "checkingazuredata",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSQLDB",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "checking",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "checkingazuredata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greater(activity('checkingazuredata').output.RecordCount,0)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "movingdatatosnowflakeblob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": "select  [S No#], \nconvert(date,[Value Date],105) as [Value Date], \nconvert(date,[Transaction Date],105) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "S No#",
+														"type": "Int32",
+														"physicalType": "int"
+													},
+													"sink": {
+														"name": "S No#",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Value Date",
+														"type": "DateTime",
+														"physicalType": "date"
+													},
+													"sink": {
+														"name": "Value Date",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Transaction Date",
+														"type": "DateTime",
+														"physicalType": "date"
+													},
+													"sink": {
+														"name": "Transaction Date",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Cheque Number",
+														"type": "String",
+														"physicalType": "varchar"
+													},
+													"sink": {
+														"name": "Cheque Number",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Transaction Remarks",
+														"type": "String",
+														"physicalType": "varchar"
+													},
+													"sink": {
+														"name": "Transaction Remarks",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Withdrawal Amount (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													},
+													"sink": {
+														"name": "Withdrawal Amount (INR )",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Deposit Amount (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													},
+													"sink": {
+														"name": "Deposit Amount (INR )",
+														"type": "String",
+														"physicalType": "String"
+													}
+												},
+												{
+													"source": {
+														"name": "Balance (INR )",
+														"type": "Decimal",
+														"physicalType": "decimal",
+														"scale": 10,
+														"precision": 32
+													},
+													"sink": {
+														"name": "Balance (INR )",
+														"type": "String",
+														"physicalType": "String"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "AzureSQLDB",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "SnowflakeBolbFiles",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSQLDB')]",
+				"[concat(variables('factoryId'), '/datasets/SnowflakeBolbFiles')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/p_Master')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "OnpremisetoBlob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_OnpremisetoBlob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"DBName": "ADFLearning",
+								"FolderName": "onpremisefiles"
+							}
+						}
+					},
+					{
+						"name": "BlobtoAzure",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "OnpremisetoBlob",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_BlobtoAzureDB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Movingfilestosnowflakeblob",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "BlobtoAzure",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_AzuretoBlob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/P_OnpremisetoBlob')]",
+				"[concat(variables('factoryId'), '/pipelines/P_BlobtoAzureDB')]",
+				"[concat(variables('factoryId'), '/pipelines/P_AzuretoBlob')]"
 			]
 		}
 	]
