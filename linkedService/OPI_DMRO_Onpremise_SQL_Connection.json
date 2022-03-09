@@ -1,0 +1,22 @@
+{
+	"name": "OPI_DMRO_Onpremise_SQL_Connection",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Data Source=DESKTOP-NTTCE9M;Initial Catalog=ADFLearning;User ID=siva",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultConnection",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "Password"
+			}
+		},
+		"connectVia": {
+			"referenceName": "OPI-DMRO-Onpremise-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
