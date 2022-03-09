@@ -26,6 +26,25 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "Record Checking",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "hasData",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('hasData').output.firstrow.RecordCount,0)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"annotations": []
