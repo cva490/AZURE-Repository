@@ -1,0 +1,50 @@
+{
+	"name": "BlobOnpremiseFileslooping",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OPI_DMRO_Blob_Connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+					"type": "Expression"
+				},
+				"container": "onpremisefiles"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
