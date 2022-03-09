@@ -1,0 +1,29 @@
+{
+	"name": "SnowflakeBolbFiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OPI_DMRO_Blob_Connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+					"type": "Expression"
+				},
+				"container": "snowflakeinputfiles"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
