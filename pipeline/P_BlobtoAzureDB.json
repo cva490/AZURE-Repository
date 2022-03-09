@@ -1,0 +1,38 @@
+{
+	"name": "P_BlobtoAzureDB",
+	"properties": {
+		"activities": [
+			{
+				"name": "CheckingFileExistance",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "BlobOnpremiseFiles",
+						"type": "DatasetReference",
+						"parameters": {
+							"OnpremiseFolder": "onpremisefiles "
+						}
+					},
+					"fieldList": [],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
