@@ -221,6 +221,9 @@
 		"parameters": {
 			"DBName": {
 				"type": "String"
+			},
+			"FolderName": {
+				"type": "string"
 			}
 		},
 		"annotations": []
