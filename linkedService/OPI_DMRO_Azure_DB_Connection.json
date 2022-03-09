@@ -1,0 +1,18 @@
+{
+	"name": "OPI_DMRO_Azure_DB_Connection",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=azsqlsrvopidmro.database.windows.net;Initial Catalog=azssqldbopidmro;User ID=siva",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultConnection",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "Password"
+			}
+		}
+	}
+}
