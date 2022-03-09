@@ -1,0 +1,45 @@
+{
+	"name": "p_Master",
+	"properties": {
+		"activities": [
+			{
+				"name": "OnpremisetoBlob",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "P_OnpremisetoBlob",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"DBName": "ADFLearning",
+						"FolderName": "onpremisefiles"
+					}
+				}
+			},
+			{
+				"name": "BlobtoAzure",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "OnpremisetoBlob",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "P_BlobtoAzureDB",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
