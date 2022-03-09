@@ -311,6 +311,13 @@
 									"referenceName": "BlobOnpremiseFileslooping",
 									"type": "DatasetReference"
 								},
+								"logStorageSettings": {
+									"linkedServiceName": {
+										"referenceName": "OPI_DMRO_Blob_Connection",
+										"type": "LinkedServiceReference"
+									},
+									"path": "deletedfileslogging"
+								},
 								"enableLogging": true,
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
