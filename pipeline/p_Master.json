@@ -38,6 +38,26 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Movingfilestosnowflakeblob",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "BlobtoAzure",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "P_AzuretoBlob",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
 		"annotations": []
