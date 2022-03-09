@@ -1,0 +1,25 @@
+{
+	"name": "trg_initialload",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "p_Master",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 5,
+				"startTime": "2022-03-09T09:07:00Z",
+				"endTime": "2022-03-09T09:20:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
