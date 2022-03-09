@@ -209,7 +209,10 @@
 									"referenceName": "BlobOnpremiseFiles",
 									"type": "DatasetReference",
 									"parameters": {
-										"OnpremiseFolder": "onpremisefiles"
+										"OnpremiseFolder": {
+											"value": "@pipeline().parameters.FolderName",
+											"type": "Expression"
+										}
 									}
 								}
 							]
