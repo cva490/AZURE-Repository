@@ -84,6 +84,110 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "S No#",
+												"type": "Int32",
+												"physicalType": "int"
+											},
+											"sink": {
+												"name": "S No#",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Value Date",
+												"type": "DateTime",
+												"physicalType": "date"
+											},
+											"sink": {
+												"name": "Value Date",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Transaction Date",
+												"type": "DateTime",
+												"physicalType": "date"
+											},
+											"sink": {
+												"name": "Transaction Date",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Cheque Number",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "Cheque Number",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Transaction Remarks",
+												"type": "String",
+												"physicalType": "varchar"
+											},
+											"sink": {
+												"name": "Transaction Remarks",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Withdrawal Amount (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Withdrawal Amount (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Deposit Amount (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Deposit Amount (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "Balance (INR )",
+												"type": "Decimal",
+												"physicalType": "decimal",
+												"scale": 10,
+												"precision": 32
+											},
+											"sink": {
+												"name": "Balance (INR )",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
@@ -94,7 +198,10 @@
 							"inputs": [
 								{
 									"referenceName": "OnpremiseSqlServer",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"dsOnPremiseDBName": "ADFLearning"
+									}
 								}
 							],
 							"outputs": [
