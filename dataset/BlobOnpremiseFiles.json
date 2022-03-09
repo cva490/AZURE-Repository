@@ -1,0 +1,38 @@
+{
+	"name": "BlobOnpremiseFiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OPI_DMRO_Blob_Connection",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"OnpremiseFolder": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat('Daytransactions_',formatDateTime(utcnow(),'yyyy-MM-dd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().OnpremiseFolder",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
