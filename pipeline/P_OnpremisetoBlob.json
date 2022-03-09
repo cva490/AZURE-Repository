@@ -23,7 +23,13 @@
 					},
 					"dataset": {
 						"referenceName": "OnpremiseSqlServer",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"dsOnPremiseDBName": {
+								"value": "@pipeline().parameters.DBName",
+								"type": "Expression"
+							}
+						}
 					}
 				}
 			},
@@ -105,6 +111,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"DBName": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
