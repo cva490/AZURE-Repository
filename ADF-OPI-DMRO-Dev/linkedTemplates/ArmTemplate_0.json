@@ -1331,7 +1331,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -1343,8 +1343,7 @@
 				],
 				"type": "BlobEventsTrigger",
 				"typeProperties": {
-					"blobPathBeginsWith": "/onpremisefiles/blobs/",
-					"blobPathEndsWith": ".csv",
+					"blobPathBeginsWith": "/onpremisefiles/blobs/2022-03-10/",
 					"ignoreEmptyBlobs": true,
 					"scope": "[parameters('tgr-blobtoazure-event_properties_typeProperties_scope')]",
 					"events": [
