@@ -2,7 +2,7 @@
 	"name": "tgr-blobtoazure-event",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
