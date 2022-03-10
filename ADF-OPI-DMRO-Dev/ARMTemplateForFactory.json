@@ -101,7 +101,7 @@
 									"typeProperties": {
 										"source": {
 											"type": "AzureSqlSource",
-											"sqlReaderQuery": "select  [S No#], \nconvert(date,[Value Date],105) as [Value Date], \nconvert(date,[Transaction Date],105) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+											"sqlReaderQuery": "select  [S No#], \ncast(getdate() as date) as [Value Date], \ncast([Transaction Date] as date) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,cast([Transaction Date] as date))=cast(getdate() as date)",
 											"queryTimeout": "02:00:00",
 											"partitionOption": "None"
 										},
