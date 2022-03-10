@@ -842,6 +842,63 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Loggingpipeline",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Record Checking",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[udp_pipelineloging]",
+							"storedProcedureParameters": {
+								"createdby": {
+									"value": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"pipelinename": {
+									"value": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trgname": {
+									"value": {
+										"value": "@pipeline().TriggerName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"trgruntime": {
+									"value": {
+										"value": "@pipeline().TriggerTime",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "OPI_DMRO_Azure_DB_Connection",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"policy": {
@@ -862,6 +919,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/OnpremiseSqlServer')]",
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]",
 				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFiles')]"
 			]
 		},
