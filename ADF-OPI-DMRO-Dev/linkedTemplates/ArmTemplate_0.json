@@ -26,6 +26,10 @@
 		"tgr-blobtoazure-event_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev"
+		},
+		"trg-AzuretoBlob-event_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev"
 		}
 	},
 	"variables": {
@@ -1353,6 +1357,36 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/P_BlobtoAzureDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trg-AzuretoBlob-event')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "P_AzuretoBlob",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/onpremisefiles/blobs/2022-03-10/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trg-AzuretoBlob-event_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobDeleted"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/P_AzuretoBlob')]"
 			]
 		}
 	]
