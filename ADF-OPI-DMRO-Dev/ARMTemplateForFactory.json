@@ -82,7 +82,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@greater(activity('checkingazuredata').output.RecordCount,0)",
+								"value": "@greater(activity('checkingazuredata').output.firstrow.RecordCount,0)",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
