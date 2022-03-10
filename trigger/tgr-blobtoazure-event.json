@@ -13,8 +13,7 @@
 		],
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
-			"blobPathBeginsWith": "/onpremisefiles/blobs/",
-			"blobPathEndsWith": ".csv",
+			"blobPathBeginsWith": "/onpremisefiles/blobs/2022-03-10/",
 			"ignoreEmptyBlobs": true,
 			"scope": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev",
 			"events": [
