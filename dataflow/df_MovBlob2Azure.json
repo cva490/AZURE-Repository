@@ -1,0 +1,41 @@
+{
+	"name": "df_MovBlob2Azure",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "OPI_DMRO_Blob_Connection",
+						"type": "LinkedServiceReference"
+					},
+					"name": "Blobfilesoutput"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     p_df_Filepath as string (Daytransactions_2022-03-10.csv)",
+				"}",
+				"source(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     limit: 10,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'onpremisefiles',",
+				"     folderPath: '2022-03-10',",
+				"     fileName: 'Daytransactions_2022-03-10.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> Blobfilesoutput",
+				"Blobfilesoutput alterRow() ~> alterRow1"
+			]
+		}
+	}
+}
