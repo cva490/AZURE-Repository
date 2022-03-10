@@ -249,34 +249,12 @@
 							},
 							"type": "String"
 						},
-						"ErrorDesc": {
-							"value": null,
-							"type": "String"
-						},
-						"errornumb": {
-							"value": null,
-							"type": "String"
-						},
 						"pipelinename": {
 							"value": {
 								"value": "@pipeline().Pipeline",
 								"type": "Expression"
 							},
 							"type": "String"
-						},
-						"Pipelinest": {
-							"value": {
-								"value": "@pipeline().TriggerType",
-								"type": "Expression"
-							},
-							"type": "String"
-						},
-						"rundate": {
-							"value": {
-								"value": "@pipeline().TriggerTime",
-								"type": "Expression"
-							},
-							"type": "DateTime"
 						},
 						"trgname": {
 							"value": {
@@ -291,13 +269,6 @@
 								"type": "Expression"
 							},
 							"type": "DateTime"
-						},
-						"updatedby": {
-							"value": {
-								"value": "@pipeline().DataFactory",
-								"type": "Expression"
-							},
-							"type": "String"
 						}
 					}
 				},
