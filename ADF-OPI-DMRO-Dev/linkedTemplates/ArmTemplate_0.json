@@ -22,25 +22,16 @@
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kypasswordvault.vault.azure.net/"
+		},
+		"tgr-blobtoazure-event_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Blob_Connection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('OPI_DMRO_Blob_Connection_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultConnection')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -55,6 +46,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Blob_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('OPI_DMRO_Blob_Connection_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/OPI-DMRO-Onpremise-IR')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -63,105 +67,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Azure_DB_Connection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('OPI_DMRO_Azure_DB_Connection_connectionString')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVaultConnection",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "Password"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BlobOnpremiseFiles')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "OPI_DMRO_Blob_Connection",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"OnpremiseFolder": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat('Daytransactions_',formatDateTime(utcnow(),'yyyy-MM-dd'),'.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().OnpremiseFolder",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Onpremise_SQL_Connection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"OnpremiseDBName": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('OPI_DMRO_Onpremise_SQL_Connection_connectionString')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVaultConnection",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "Password"
-					}
-				},
-				"connectVia": {
-					"referenceName": "OPI-DMRO-Onpremise-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/OPI-DMRO-Onpremise-IR')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/BlobOnpremiseFilechecking')]",
@@ -214,6 +119,49 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobOnpremiseFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OnpremiseFolder": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('Daytransactions_',formatDateTime(utcnow(),'yyyy-MM-dd'),'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().OnpremiseFolder",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
@@ -275,40 +223,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/archievingfiles')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "OPI_DMRO_Blob_Connection",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
-							"type": "Expression"
-						},
-						"container": "archievefolder"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/SnowflakeBolbFiles')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -344,32 +258,93 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/OnpremiseSqlServer')]",
+			"name": "[concat(parameters('factoryName'), '/archievingfiles')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "OPI_DMRO_Onpremise_SQL_Connection",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"OnpremiseDBName": {
-							"value": "@dataset().dsOnPremiseDBName",
-							"type": "Expression"
-						}
-					}
+					"referenceName": "OPI_DMRO_Blob_Connection",
+					"type": "LinkedServiceReference"
 				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"container": "archievefolder"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Azure_DB_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('OPI_DMRO_Azure_DB_Connection_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultConnection",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "Password"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OPI_DMRO_Onpremise_SQL_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
 				"parameters": {
-					"dsOnPremiseDBName": {
+					"OnpremiseDBName": {
 						"type": "String"
 					}
 				},
 				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {}
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('OPI_DMRO_Onpremise_SQL_Connection_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultConnection",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "Password"
+					}
+				},
+				"connectVia": {
+					"referenceName": "OPI-DMRO-Onpremise-IR",
+					"type": "IntegrationRuntimeReference"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Onpremise_SQL_Connection')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/OPI-DMRO-Onpremise-IR')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
 			]
 		},
 		{
@@ -415,13 +390,42 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/P_OnpremisetoBlob')]",
+			"name": "[concat(parameters('factoryName'), '/OnpremiseSqlServer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OPI_DMRO_Onpremise_SQL_Connection",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"OnpremiseDBName": {
+							"value": "@dataset().dsOnPremiseDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"dsOnPremiseDBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Onpremise_SQL_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_AzuretoBlob')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "hasData",
+						"name": "checkingazuredata",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -434,29 +438,24 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": "\nselect  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "OnpremiseSqlServer",
+								"referenceName": "AzureSQLDB",
 								"type": "DatasetReference",
-								"parameters": {
-									"dsOnPremiseDBName": {
-										"value": "@pipeline().parameters.DBName",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						}
 					},
 					{
-						"name": "Record Checking",
+						"name": "checking",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
-								"activity": "hasData",
+								"activity": "checkingazuredata",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -465,12 +464,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@greater(activity('hasData').output.firstrow.RecordCount,0)",
+								"value": "@greater(activity('checkingazuredata').output.RecordCount,0)",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
 								{
-									"name": "Moving Data",
+									"name": "movingdatatosnowflakeblob",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -483,7 +482,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"source": {
-											"type": "SqlServerSource",
+											"type": "AzureSqlSource",
 											"sqlReaderQuery": "select  [S No#], \nconvert(date,[Value Date],105) as [Value Date], \nconvert(date,[Transaction Date],105) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
 											"queryTimeout": "02:00:00",
 											"partitionOption": "None"
@@ -615,23 +614,16 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "OnpremiseSqlServer",
+											"referenceName": "AzureSQLDB",
 											"type": "DatasetReference",
-											"parameters": {
-												"dsOnPremiseDBName": "ADFLearning"
-											}
+											"parameters": {}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "BlobOnpremiseFiles",
+											"referenceName": "SnowflakeBolbFiles",
 											"type": "DatasetReference",
-											"parameters": {
-												"OnpremiseFolder": {
-													"value": "@pipeline().parameters.FolderName",
-													"type": "Expression"
-												}
-											}
+											"parameters": {}
 										}
 									]
 								}
@@ -643,21 +635,11 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
-				"parameters": {
-					"DBName": {
-						"type": "String",
-						"defaultValue": "ADFLearning"
-					},
-					"FolderName": {
-						"type": "string",
-						"defaultValue": "onpremisefiles"
-					}
-				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/OnpremiseSqlServer')]",
-				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFiles')]"
+				"[concat(variables('factoryId'), '/datasets/AzureSQLDB')]",
+				"[concat(variables('factoryId'), '/datasets/SnowflakeBolbFiles')]"
 			]
 		},
 		{
@@ -689,6 +671,7 @@
 							],
 							"storeSettings": {
 								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
 								"enablePartitionDiscovery": false
 							},
 							"formatSettings": {
@@ -1019,13 +1002,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/P_AzuretoBlob')]",
+			"name": "[concat(parameters('factoryName'), '/P_OnpremisetoBlob')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "checkingazuredata",
+						"name": "hasData",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -1038,24 +1021,29 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "\nselect  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "AzureSQLDB",
+								"referenceName": "OnpremiseSqlServer",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"dsOnPremiseDBName": {
+										"value": "@pipeline().parameters.DBName",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					},
 					{
-						"name": "checking",
+						"name": "Record Checking",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
-								"activity": "checkingazuredata",
+								"activity": "hasData",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1064,12 +1052,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@greater(activity('checkingazuredata').output.RecordCount,0)",
+								"value": "@greater(activity('hasData').output.firstrow.RecordCount,0)",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
 								{
-									"name": "movingdatatosnowflakeblob",
+									"name": "Moving Data",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -1082,7 +1070,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"source": {
-											"type": "AzureSqlSource",
+											"type": "SqlServerSource",
 											"sqlReaderQuery": "select  [S No#], \nconvert(date,[Value Date],105) as [Value Date], \nconvert(date,[Transaction Date],105) [Transaction Date], \n[Cheque Number], \n[Transaction Remarks], \n[Withdrawal Amount (INR )], \n[Deposit Amount (INR )], \n[Balance (INR )]\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
 											"queryTimeout": "02:00:00",
 											"partitionOption": "None"
@@ -1214,16 +1202,23 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "AzureSQLDB",
+											"referenceName": "OnpremiseSqlServer",
 											"type": "DatasetReference",
-											"parameters": {}
+											"parameters": {
+												"dsOnPremiseDBName": "ADFLearning"
+											}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "SnowflakeBolbFiles",
+											"referenceName": "BlobOnpremiseFiles",
 											"type": "DatasetReference",
-											"parameters": {}
+											"parameters": {
+												"OnpremiseFolder": {
+													"value": "@pipeline().parameters.FolderName",
+													"type": "Expression"
+												}
+											}
 										}
 									]
 								}
@@ -1235,11 +1230,21 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "ADFLearning"
+					},
+					"FolderName": {
+						"type": "string",
+						"defaultValue": "onpremisefiles"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/AzureSQLDB')]",
-				"[concat(variables('factoryId'), '/datasets/SnowflakeBolbFiles')]"
+				"[concat(variables('factoryId'), '/datasets/OnpremiseSqlServer')]",
+				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFiles')]"
 			]
 		},
 		{
@@ -1318,6 +1323,37 @@
 				"[concat(variables('factoryId'), '/pipelines/P_OnpremisetoBlob')]",
 				"[concat(variables('factoryId'), '/pipelines/P_BlobtoAzureDB')]",
 				"[concat(variables('factoryId'), '/pipelines/P_AzuretoBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tgr-blobtoazure-event')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "P_BlobtoAzureDB",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/onpremisefiles/blobs/",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('tgr-blobtoazure-event_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/P_BlobtoAzureDB')]"
 			]
 		}
 	]

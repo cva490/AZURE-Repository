@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ADF-OPI-DMRO-Dev"
 		},
-		"OPI_DMRO_Blob_Connection_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Blob_Connection'"
-		},
 		"OPI_DMRO_Azure_DB_Connection_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Azure_DB_Connection'"
+		},
+		"OPI_DMRO_Blob_Connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Blob_Connection'"
 		},
 		"OPI_DMRO_Onpremise_SQL_Connection_connectionString": {
 			"type": "secureString",
@@ -22,6 +22,10 @@
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kypasswordvault.vault.azure.net/"
+		},
+		"tgr-blobtoazure-event_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev"
 		},
 		"containerUri": {
 			"type": "string",
@@ -61,6 +65,9 @@
 					},
 					"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultConnection_properties_typeProperties_baseUrl')]"
+					},
+					"tgr-blobtoazure-event_properties_typeProperties_scope": {
+						"value": "[parameters('tgr-blobtoazure-event_properties_typeProperties_scope')]"
 					}
 				}
 			},

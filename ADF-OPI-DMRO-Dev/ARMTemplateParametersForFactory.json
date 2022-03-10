@@ -5,10 +5,10 @@
 		"factoryName": {
 			"value": "ADF-OPI-DMRO-Dev"
 		},
-		"OPI_DMRO_Blob_Connection_connectionString": {
+		"OPI_DMRO_Azure_DB_Connection_connectionString": {
 			"value": ""
 		},
-		"OPI_DMRO_Azure_DB_Connection_connectionString": {
+		"OPI_DMRO_Blob_Connection_connectionString": {
 			"value": ""
 		},
 		"OPI_DMRO_Onpremise_SQL_Connection_connectionString": {
@@ -16,6 +16,9 @@
 		},
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"value": "https://kypasswordvault.vault.azure.net/"
+		},
+		"tgr-blobtoazure-event_properties_typeProperties_scope": {
+			"value": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev"
 		}
 	}
 }
