@@ -1,0 +1,25 @@
+{
+	"name": "tgr-blobtoazure-event",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "P_BlobtoAzureDB",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/onpremisefiles/blobs/",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/2715e8ef-c1ba-485b-854b-9278c8f7b3f1/resourceGroups/rg_OPI_DMRO_Dev/providers/Microsoft.Storage/storageAccounts/saopidmrodev",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
