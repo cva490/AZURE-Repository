@@ -10,19 +10,44 @@
 						"type": "LinkedServiceReference"
 					},
 					"name": "Blobfilesoutput"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSQLDBQuery",
+						"type": "DatasetReference"
+					},
+					"name": "ADFSoriceforCache"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "CacheSink"
+				},
+				{
+					"linkedService": {
+						"referenceName": "OPI_DMRO_Azure_DB_Connection",
+						"type": "LinkedServiceReference"
+					},
+					"name": "LoadingtoAzure"
+				}
+			],
 			"transformations": [
 				{
-					"name": "alterRow1"
+					"name": "AlterRowData"
 				}
 			],
 			"scriptLines": [
-				"parameters{",
-				"     p_df_Filepath as string (Daytransactions_2022-03-10.csv)",
-				"}",
-				"source(allowSchemaDrift: false,",
+				"source(output(",
+				"          {S No#} as integer,",
+				"          {Value Date} as string,",
+				"          {Transaction Date} as string,",
+				"          {Cheque Number} as string,",
+				"          {Transaction Remarks} as string,",
+				"          {Withdrawal Amount (INR )} as double,",
+				"          {Deposit Amount (INR )} as double,",
+				"          {Balance (INR )} as double",
+				"     ),",
+				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     limit: 10,",
 				"     ignoreNoFilesFound: false,",
@@ -34,7 +59,51 @@
 				"     escapeChar: '\\\\',",
 				"     quoteChar: '\\\"',",
 				"     columnNamesAsHeader: true) ~> Blobfilesoutput",
-				"Blobfilesoutput alterRow() ~> alterRow1"
+				"source(output(",
+				"          {S No#} as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
+				"     format: 'query') ~> ADFSoriceforCache",
+				"Blobfilesoutput alterRow(updateIf(isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
+				"ADFSoriceforCache sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     keys:['S No#'],",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          {S No#}",
+				"     )) ~> CacheSink",
+				"AlterRowData sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'BanktransactionDetail',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: true,",
+				"     keys:['S No#'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          {S No#},",
+				"          {Value Date},",
+				"          {Transaction Date},",
+				"          {Cheque Number},",
+				"          {Transaction Remarks},",
+				"          {Withdrawal Amount (INR )},",
+				"          {Deposit Amount (INR )},",
+				"          {Balance (INR )}",
+				"     )) ~> LoadingtoAzure"
 			]
 		}
 	}
