@@ -72,9 +72,6 @@
 					},
 					"tgr-blobtoazure-event_properties_typeProperties_scope": {
 						"value": "[parameters('tgr-blobtoazure-event_properties_typeProperties_scope')]"
-					},
-					"trg-AzuretoBlob-event_properties_typeProperties_scope": {
-						"value": "[parameters('trg-AzuretoBlob-event_properties_typeProperties_scope')]"
 					}
 				}
 			},
@@ -93,6 +90,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"trg-AzuretoBlob-event_properties_typeProperties_scope": {
+						"value": "[parameters('trg-AzuretoBlob-event_properties_typeProperties_scope')]"
 					}
 				}
 			},

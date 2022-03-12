@@ -768,6 +768,55 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/P_DF_LoadingDatatoAzure')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_loadingAzure_incremental",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_MovBlob2Azure",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Blobfilesoutput": {},
+									"ADFSoriceforCache": {},
+									"CacheSink": {},
+									"LoadingtoAzure": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_MovBlob2Azure')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/P_OnpremisetoBlob')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1686,9 +1735,9 @@
 						"     schemaName: 'dbo',",
 						"     tableName: 'BanktransactionDetail',",
 						"     insertable: true,",
-						"     updateable: false,",
+						"     updateable: true,",
 						"     deletable: false,",
-						"     upsertable: true,",
+						"     upsertable: false,",
 						"     keys:['S No#'],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -1710,55 +1759,6 @@
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/P_DF_LoadingDatatoAzure')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "df_loadingAzure_incremental",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_MovBlob2Azure",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Blobfilesoutput": {},
-									"ADFSoriceforCache": {},
-									"CacheSink": {},
-									"LoadingtoAzure": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_MovBlob2Azure')]"
 			]
 		}
 	]
