@@ -276,7 +276,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.csv')",
+							"value": "@concat('Dailytransactions_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.txt')",
 							"type": "Expression"
 						},
 						"folderPath": {
@@ -1458,6 +1458,123 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_MovBlob2Azure')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "OPI_DMRO_Blob_Connection",
+								"type": "LinkedServiceReference"
+							},
+							"name": "Blobfilesoutput"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSQLDBQuery",
+								"type": "DatasetReference"
+							},
+							"name": "ADFSoriceforCache"
+						}
+					],
+					"sinks": [
+						{
+							"name": "CacheSink"
+						},
+						{
+							"linkedService": {
+								"referenceName": "OPI_DMRO_Azure_DB_Connection",
+								"type": "LinkedServiceReference"
+							},
+							"name": "LoadingtoAzure"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AlterRowData"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {S No#} as integer,",
+						"          {Value Date} as string,",
+						"          {Transaction Date} as string,",
+						"          {Cheque Number} as string,",
+						"          {Transaction Remarks} as string,",
+						"          {Withdrawal Amount (INR )} as double,",
+						"          {Deposit Amount (INR )} as double,",
+						"          {Balance (INR )} as double",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     limit: 10,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'onpremisefiles',",
+						"     folderPath: '2022-03-10',",
+						"     fileName: 'Daytransactions_2022-03-10.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> Blobfilesoutput",
+						"source(output(",
+						"          {S No#} as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
+						"     format: 'query') ~> ADFSoriceforCache",
+						"Blobfilesoutput alterRow(updateIf(!isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
+						"ADFSoriceforCache sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     keys:['S No#'],",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          {S No#}",
+						"     )) ~> CacheSink",
+						"AlterRowData sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'BanktransactionDetail',",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     deletable: false,",
+						"     upsertable: true,",
+						"     keys:['S No#'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          {S No#},",
+						"          {Value Date},",
+						"          {Transaction Date},",
+						"          {Cheque Number},",
+						"          {Transaction Remarks},",
+						"          {Withdrawal Amount (INR )},",
+						"          {Deposit Amount (INR )},",
+						"          {Balance (INR )}",
+						"     )) ~> LoadingtoAzure"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/p_Master')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1571,7 +1688,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
