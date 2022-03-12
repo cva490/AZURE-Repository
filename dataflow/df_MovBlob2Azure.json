@@ -67,7 +67,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
 				"     format: 'query') ~> ADFSoriceforCache",
-				"Blobfilesoutput alterRow(updateIf(isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
+				"Blobfilesoutput alterRow(updateIf(!isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
 				"ADFSoriceforCache sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
