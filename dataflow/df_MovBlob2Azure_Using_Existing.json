@@ -58,6 +58,9 @@
 			"transformations": [
 				{
 					"name": "ChickingExitingConditions"
+				},
+				{
+					"name": "alterRowUpdate"
 				}
 			],
 			"scriptLines": [
@@ -102,6 +105,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED') ~> GettingMaxID",
 				"Blobfilesoutput split(!isNull(CacheSink#lookup({S No#})),",
 				"     disjoint: false) ~> ChickingExitingConditions@(Existing, nonExisting)",
+				"ChickingExitingConditions@Existing alterRow(updateIf(equals(1, 1))) ~> alterRowUpdate",
 				"ADFSoriceforCache sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
@@ -135,7 +139,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"ChickingExitingConditions@Existing sink(allowSchemaDrift: true,",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:false,",
