@@ -61,6 +61,12 @@
 				},
 				{
 					"name": "alterRowUpdate"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -106,6 +112,9 @@
 				"Blobfilesoutput split(!isNull(CacheSink#lookup({S No#})),",
 				"     disjoint: false) ~> ChickingExitingConditions@(Existing, nonExisting)",
 				"ChickingExitingConditions@Existing alterRow(updateIf(equals(1, 1))) ~> alterRowUpdate",
+				"ChickingExitingConditions@nonExisting keyGenerate(output(key_surrogate as long),",
+				"     startAt: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(key_surrogate_newcolm = CachingMaxID#outputs()[1].Max_RowID+key_surrogate) ~> derivedColumn1",
 				"ADFSoriceforCache sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
@@ -160,7 +169,7 @@
 				"          {Deposit Amount (INR )},",
 				"          {Balance (INR )}",
 				"     )) ~> UpdatingSink",
-				"ChickingExitingConditions@nonExisting sink(allowSchemaDrift: true,",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -178,7 +187,8 @@
 				"          {Transaction Remarks},",
 				"          {Withdrawal Amount (INR )},",
 				"          {Deposit Amount (INR )},",
-				"          {Balance (INR )}",
+				"          {Balance (INR )},",
+				"          Row_ID = key_surrogate",
 				"     )) ~> InsertingintoSink"
 			]
 		}
