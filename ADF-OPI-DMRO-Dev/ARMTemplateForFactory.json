@@ -1876,7 +1876,7 @@
 						"          {Withdrawal Amount (INR )},",
 						"          {Deposit Amount (INR )},",
 						"          {Balance (INR )},",
-						"          Row_ID = key_surrogate",
+						"          Row_ID = key_surrogate_newcolm",
 						"     )) ~> InsertingintoSink"
 					]
 				}
