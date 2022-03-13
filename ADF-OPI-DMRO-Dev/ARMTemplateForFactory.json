@@ -1809,7 +1809,9 @@
 						"ChickingExitingConditions@Existing alterRow(updateIf(equals(1,1))) ~> alterRowUpdate",
 						"ChickingExitingConditions@nonExisting keyGenerate(output(key_surrogate as long),",
 						"     startAt: 1L) ~> surrogateKey1",
-						"surrogateKey1 derive(key_surrogate_newcolm = CachingMaxID#outputs()[1].Max_RowID+key_surrogate) ~> derivedColumn1",
+						"surrogateKey1 derive(key_surrogate_newcolm = CachingMaxID#outputs()[1].Max_RowID+key_surrogate,",
+						"          Month = month(currentDate({Transaction Date})),",
+						"          year = year(currentDate({Transaction Date}))) ~> derivedColumn1",
 						"ADFSoriceforCache sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
@@ -1892,7 +1894,9 @@
 						"          {Withdrawal Amount (INR )},",
 						"          {Deposit Amount (INR )},",
 						"          {Balance (INR )},",
-						"          Row_Id = key_surrogate_newcolm",
+						"          Row_Id = key_surrogate_newcolm,",
+						"          Trn_Year = year,",
+						"          Trn_Month = Month",
 						"     )) ~> InsertingintoSink"
 					]
 				}
