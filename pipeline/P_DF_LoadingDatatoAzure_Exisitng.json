@@ -1,5 +1,5 @@
 {
-	"name": "P_DF_LoadingDatatoAzure",
+	"name": "P_DF_LoadingDatatoAzure_Exisitng",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_MovBlob2Azure_usingAlterrow",
+						"referenceName": "df_MovBlob2Azure_Using_Existing",
 						"type": "DataFlowReference"
 					},
 					"compute": {
