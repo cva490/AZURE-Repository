@@ -1743,9 +1743,9 @@
 							"name": "UpdatingSink"
 						},
 						{
-							"dataset": {
-								"referenceName": "AzureSQLDB",
-								"type": "DatasetReference"
+							"linkedService": {
+								"referenceName": "OPI_DMRO_Azure_DB_Connection",
+								"type": "LinkedServiceReference"
 							},
 							"name": "InsertingintoSink"
 						}
@@ -1859,11 +1859,27 @@
 						"     )) ~> UpdatingSink",
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
+						"     input(",
+						"          {S No#} as integer,",
+						"          {Value Date} as string,",
+						"          {Transaction Date} as string,",
+						"          {Cheque Number} as string,",
+						"          {Transaction Remarks} as string,",
+						"          {Withdrawal Amount (INR )} as decimal(32,10),",
+						"          {Deposit Amount (INR )} as decimal(32,10),",
+						"          {Balance (INR )} as decimal(32,10),",
+						"          Row_Id as integer,",
+						"          Trn_Year as integer,",
+						"          Trn_Month as string",
+						"     ),",
 						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'BanktransactionDetail',",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     deletable: false,",
+						"     upsertable: false,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     errorHandlingOption: 'stopOnFirstError',",
@@ -1876,7 +1892,7 @@
 						"          {Withdrawal Amount (INR )},",
 						"          {Deposit Amount (INR )},",
 						"          {Balance (INR )},",
-						"          Row_ID = key_surrogate_newcolm",
+						"          Row_Id = key_surrogate_newcolm",
 						"     )) ~> InsertingintoSink"
 					]
 				}
@@ -1884,8 +1900,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSQLDB')]"
+				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
 			]
 		},
 		{
