@@ -34,13 +34,6 @@
 					"name": "CachingMaxID"
 				},
 				{
-					"dataset": {
-						"referenceName": "AzureSQLDB",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				},
-				{
 					"linkedService": {
 						"referenceName": "OPI_DMRO_Azure_DB_Connection",
 						"type": "LinkedServiceReference"
@@ -111,7 +104,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED') ~> GettingMaxID",
 				"Blobfilesoutput split(!isNull(CacheSink#lookup({S No#})),",
 				"     disjoint: false) ~> ChickingExitingConditions@(Existing, nonExisting)",
-				"ChickingExitingConditions@Existing alterRow(updateIf(equals(1, 1))) ~> alterRowUpdate",
+				"ChickingExitingConditions@Existing alterRow(updateIf(equals(1,1))) ~> alterRowUpdate",
 				"ChickingExitingConditions@nonExisting keyGenerate(output(key_surrogate as long),",
 				"     startAt: 1L) ~> surrogateKey1",
 				"surrogateKey1 derive(key_surrogate_newcolm = CachingMaxID#outputs()[1].Max_RowID+key_surrogate) ~> derivedColumn1",
@@ -138,16 +131,6 @@
 				"     mapColumn(",
 				"          Max_RowID",
 				"     )) ~> CachingMaxID",
-				"Blobfilesoutput sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
 				"alterRowUpdate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'table',",
