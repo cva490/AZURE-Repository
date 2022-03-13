@@ -52,7 +52,7 @@
 						"referenceName": "AzureSQLDB",
 						"type": "DatasetReference"
 					},
-					"name": "InsertintoSink"
+					"name": "InsertingintoSink"
 				}
 			],
 			"transformations": [
@@ -175,7 +175,7 @@
 				"          {Withdrawal Amount (INR )},",
 				"          {Deposit Amount (INR )},",
 				"          {Balance (INR )}",
-				"     )) ~> InsertintoSink"
+				"     )) ~> InsertingintoSink"
 			]
 		}
 	}
