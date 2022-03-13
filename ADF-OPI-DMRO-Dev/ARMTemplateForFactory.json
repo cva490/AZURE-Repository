@@ -793,8 +793,10 @@
 								"datasetParameters": {
 									"Blobfilesoutput": {},
 									"ADFSoriceforCache": {},
+									"GettingMaxID": {},
 									"CacheSink": {},
-									"LoadingtoAzure": {}
+									"LoadingtoAzure": {},
+									"CachingMaxID": {}
 								}
 							},
 							"staging": {},
@@ -1665,6 +1667,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "ADFSoriceforCache"
+						},
+						{
+							"linkedService": {
+								"referenceName": "OPI_DMRO_Azure_DB_Connection",
+								"type": "LinkedServiceReference"
+							},
+							"name": "GettingMaxID"
 						}
 					],
 					"sinks": [
@@ -1677,11 +1686,20 @@
 								"type": "LinkedServiceReference"
 							},
 							"name": "LoadingtoAzure"
+						},
+						{
+							"name": "CachingMaxID"
 						}
 					],
 					"transformations": [
 						{
 							"name": "AlterRowData"
+						},
+						{
+							"name": "genetatingRowKey"
+						},
+						{
+							"name": "RowIDSurrogate"
 						}
 					],
 					"scriptLines": [
@@ -1715,7 +1733,19 @@
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
 						"     format: 'query') ~> ADFSoriceforCache",
+						"source(output(",
+						"          Max_RowID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'query',",
+						"     store: 'sqlserver',",
+						"     query: 'select isnull(max(Row_Id),0) as Max_RowID from [dbo].[BanktransactionDetail]',",
+						"     isolationLevel: 'READ_UNCOMMITTED') ~> GettingMaxID",
 						"Blobfilesoutput alterRow(updateIf(!isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
+						"RowIDSurrogate derive(RowKey = CachingMaxID#outputs()[1].Max_RowID + RowIDSurrogate_key) ~> genetatingRowKey",
+						"AlterRowData keyGenerate(output(RowIDSurrogate_key as long),",
+						"     startAt: 1L) ~> RowIDSurrogate",
 						"ADFSoriceforCache sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
@@ -1728,8 +1758,19 @@
 						"     mapColumn(",
 						"          {S No#}",
 						"     )) ~> CacheSink",
-						"AlterRowData sink(allowSchemaDrift: true,",
+						"genetatingRowKey sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          {S No#} as integer,",
+						"          {Value Date} as string,",
+						"          {Transaction Date} as string,",
+						"          {Cheque Number} as string,",
+						"          {Transaction Remarks} as string,",
+						"          {Withdrawal Amount (INR )} as decimal(32,10),",
+						"          {Deposit Amount (INR )} as decimal(32,10),",
+						"          {Balance (INR )} as decimal(32,10),",
+						"          Row_Id as integer",
+						"     ),",
 						"     format: 'table',",
 						"     store: 'sqlserver',",
 						"     schemaName: 'dbo',",
@@ -1750,8 +1791,20 @@
 						"          {Transaction Remarks},",
 						"          {Withdrawal Amount (INR )},",
 						"          {Deposit Amount (INR )},",
-						"          {Balance (INR )}",
-						"     )) ~> LoadingtoAzure"
+						"          {Balance (INR )},",
+						"          Row_Id = RowKey",
+						"     )) ~> LoadingtoAzure",
+						"GettingMaxID sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          Max_RowID",
+						"     )) ~> CachingMaxID"
 					]
 				}
 			},
