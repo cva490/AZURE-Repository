@@ -41,9 +41,9 @@
 					"name": "sink1"
 				},
 				{
-					"dataset": {
-						"referenceName": "AzureSQLDB",
-						"type": "DatasetReference"
+					"linkedService": {
+						"referenceName": "OPI_DMRO_Azure_DB_Connection",
+						"type": "LinkedServiceReference"
 					},
 					"name": "UpdatingSink"
 				},
@@ -150,13 +150,15 @@
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
 				"alterRowUpdate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:false,",
-				"     updateable:true,",
-				"     upsertable:false,",
-				"     keys:['S No#'],",
-				"     skipKeyWrites:true,",
 				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'BanktransactionDetail',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['S No#'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
