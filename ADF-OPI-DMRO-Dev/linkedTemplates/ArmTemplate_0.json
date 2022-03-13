@@ -1507,6 +1507,9 @@
 						},
 						{
 							"name": "RowIDSurrogate"
+						},
+						{
+							"name": "FilterindDummyColumns"
 						}
 					],
 					"scriptLines": [
@@ -1553,6 +1556,19 @@
 						"RowIDSurrogate derive(RowKey = CachingMaxID#outputs()[1].Max_RowID + RowIDSurrogate_key) ~> genetatingRowKey",
 						"AlterRowData keyGenerate(output(RowIDSurrogate_key as long),",
 						"     startAt: 1L) ~> RowIDSurrogate",
+						"genetatingRowKey select(mapColumn(",
+						"          {S No#},",
+						"          {Value Date},",
+						"          {Transaction Date},",
+						"          {Cheque Number},",
+						"          {Transaction Remarks},",
+						"          {Withdrawal Amount (INR )},",
+						"          {Deposit Amount (INR )},",
+						"          {Balance (INR )},",
+						"          RowKey",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> FilterindDummyColumns",
 						"ADFSoriceforCache sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
@@ -1565,7 +1581,7 @@
 						"     mapColumn(",
 						"          {S No#}",
 						"     )) ~> CacheSink",
-						"genetatingRowKey sink(allowSchemaDrift: true,",
+						"FilterindDummyColumns sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          {S No#} as integer,",
