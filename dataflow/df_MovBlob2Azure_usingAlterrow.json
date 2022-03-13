@@ -1,5 +1,5 @@
 {
-	"name": "df_MovBlob2Azure",
+	"name": "df_MovBlob2Azure_usingAlterrow",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
