@@ -21,6 +21,80 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/p_Master')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "OnpremisetoBlob",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_OnpremisetoBlob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"DBName": "ADFLearning",
+								"FolderName": "onpremisefiles"
+							}
+						}
+					},
+					{
+						"name": "BlobtoAzure",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "OnpremisetoBlob",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_BlobtoAzureDB",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Movingfilestosnowflakeblob",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "BlobtoAzure",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "P_AzuretoBlob",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tgr-blobtoazure-event')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -73,58 +147,6 @@
 						"Microsoft.Storage.BlobDeleted"
 					]
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/P_DF_LoadingDatatoAzure_Exisitng')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "df_loadingAzure_incremental",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_MovBlob2Azure_Using_Existing",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Blobfilesoutput": {},
-									"ADFSoriceforCache": {},
-									"GettingMaxID": {},
-									"CacheSink": {},
-									"CachingMaxID": {},
-									"sink1": {},
-									"UpdatingSink": {},
-									"InsertingintoSink": {}
-								},
-								"linkedServiceParameters": {}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
 			},
 			"dependsOn": []
 		}
