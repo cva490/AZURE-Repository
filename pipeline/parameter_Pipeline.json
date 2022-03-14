@@ -20,6 +20,11 @@
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@pipeline().parameters.pipe_folderpath",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*csv",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -170,9 +175,6 @@
 		],
 		"parameters": {
 			"pipe_folderpath": {
-				"type": "String"
-			},
-			"Pipe_filepath": {
 				"type": "String"
 			}
 		},
