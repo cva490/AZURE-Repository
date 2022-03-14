@@ -61,10 +61,6 @@
 				"name": "Trn_Month",
 				"type": "varchar"
 			}
-		],
-		"typeProperties": {
-			"schema": "dbo",
-			"table": "BanktransactionDetail"
-		}
+		]
 	}
 }
