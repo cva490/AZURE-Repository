@@ -175,13 +175,16 @@
 		],
 		"parameters": {
 			"pipe_folderpath": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "2022-03-10"
 			},
 			"Pipe_ServerName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "azsqlsrvopidmro"
 			},
 			"Pipe_DBName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "azssqldbopidmro"
 			}
 		},
 		"annotations": []
