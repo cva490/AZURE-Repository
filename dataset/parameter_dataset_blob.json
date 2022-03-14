@@ -25,7 +25,8 @@
 				"folderPath": {
 					"value": "@dataset().folderpath",
 					"type": "Expression"
-				}
+				},
+				"container": "onpremisefiles"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
