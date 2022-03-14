@@ -165,10 +165,7 @@
 				"outputs": [
 					{
 						"referenceName": "parameter_Dataset_AzureSQLDB",
-						"type": "DatasetReference",
-						"parameters": {
-							"TableName": "BanktransactionDetail"
-						}
+						"type": "DatasetReference"
 					}
 				]
 			}
@@ -185,6 +182,10 @@
 			"Pipe_DBName": {
 				"type": "string",
 				"defaultValue": "azssqldbopidmro"
+			},
+			"Pipe_TableName": {
+				"type": "string",
+				"defaultValue": "BanktransactionDetail"
 			}
 		},
 		"annotations": []
