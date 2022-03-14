@@ -170,6 +170,14 @@
 							"TableName": {
 								"value": "@pipeline().parameters.Pipe_TableName",
 								"type": "Expression"
+							},
+							"ds_ServeName": {
+								"value": "@pipeline().parameters.Pipe_ServerName",
+								"type": "Expression"
+							},
+							"ds_DBName": {
+								"value": "@pipeline().parameters.Pipe_DBName",
+								"type": "Expression"
 							}
 						}
 					}

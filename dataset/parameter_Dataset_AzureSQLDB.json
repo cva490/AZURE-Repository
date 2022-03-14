@@ -3,10 +3,26 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Parameter_AzureSqlDatabase_Connection",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"SeverName": {
+					"value": "@dataset().ds_ServeName",
+					"type": "Expression"
+				},
+				"DBName": {
+					"value": "@dataset().ds_DBName",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"TableName": {
+				"type": "String"
+			},
+			"ds_ServeName": {
+				"type": "String"
+			},
+			"ds_DBName": {
 				"type": "String"
 			}
 		},
