@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "copy data",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -15,10 +15,64 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "parameter_dataset_blob",
+						"type": "DatasetReference",
+						"parameters": {
+							"folderpath": {
+								"value": "@pipeline().parameters.pipe_folderpath",
+								"type": "Expression"
+							},
+							"filepath": {
+								"value": "@pipeline().parameters.Pipe_filepath",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "parameter_Dataset_AzureSQLDB",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
+		"parameters": {
+			"pipe_folderpath": {
+				"type": "String"
+			},
+			"Pipe_filepath": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
