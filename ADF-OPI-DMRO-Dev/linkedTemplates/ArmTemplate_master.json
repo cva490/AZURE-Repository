@@ -19,6 +19,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Onpremise_SQL_Connection'"
 		},
+		"Parameter_AzureSqlDatabase_Connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Parameter_AzureSqlDatabase_Connection'"
+		},
+		"parameter_Blob_Connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'parameter_Blob_Connection'"
+		},
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kypasswordvault.vault.azure.net/"
@@ -61,11 +69,17 @@
 					"OPI_DMRO_Blob_Connection_connectionString": {
 						"value": "[parameters('OPI_DMRO_Blob_Connection_connectionString')]"
 					},
+					"parameter_Blob_Connection_connectionString": {
+						"value": "[parameters('parameter_Blob_Connection_connectionString')]"
+					},
 					"OPI_DMRO_Azure_DB_Connection_connectionString": {
 						"value": "[parameters('OPI_DMRO_Azure_DB_Connection_connectionString')]"
 					},
 					"OPI_DMRO_Onpremise_SQL_Connection_connectionString": {
 						"value": "[parameters('OPI_DMRO_Onpremise_SQL_Connection_connectionString')]"
+					},
+					"Parameter_AzureSqlDatabase_Connection_connectionString": {
+						"value": "[parameters('Parameter_AzureSqlDatabase_Connection_connectionString')]"
 					},
 					"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVaultConnection_properties_typeProperties_baseUrl')]"

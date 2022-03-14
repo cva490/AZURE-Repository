@@ -14,6 +14,12 @@
 		"OPI_DMRO_Onpremise_SQL_Connection_connectionString": {
 			"value": ""
 		},
+		"Parameter_AzureSqlDatabase_Connection_connectionString": {
+			"value": ""
+		},
+		"parameter_Blob_Connection_connectionString": {
+			"value": ""
+		},
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"value": "https://kypasswordvault.vault.azure.net/"
 		},

@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Blob_Connection'"
 		},
+		"parameter_Blob_Connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'parameter_Blob_Connection'"
+		},
 		"OPI_DMRO_Azure_DB_Connection_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Azure_DB_Connection'"
@@ -18,6 +22,10 @@
 		"OPI_DMRO_Onpremise_SQL_Connection_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'OPI_DMRO_Onpremise_SQL_Connection'"
+		},
+		"Parameter_AzureSqlDatabase_Connection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Parameter_AzureSqlDatabase_Connection'"
 		},
 		"AzureKeyVaultConnection_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -61,6 +69,19 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Blob_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('parameter_Blob_Connection_connectionString')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -344,6 +365,72 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Parameter_AzureSqlDatabase_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('Parameter_AzureSqlDatabase_Connection_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultConnection",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "Password"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_dataset_blob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "parameter_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"folderpath": {
+						"type": "String"
+					},
+					"filepath": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filepath",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folderpath",
+							"type": "Expression"
+						},
+						"container": "onpremisefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/parameter_Blob_Connection')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSQLDB')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -412,6 +499,81 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Onpremise_SQL_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Dataset_AzureSQLDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Parameter_AzureSqlDatabase_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "S No#",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Value Date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Transaction Date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Cheque Number",
+						"type": "varchar"
+					},
+					{
+						"name": "Transaction Remarks",
+						"type": "varchar"
+					},
+					{
+						"name": "Withdrawal Amount (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Deposit Amount (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Balance (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Row_Id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Trn_Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Trn_Month",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "BanktransactionDetail"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Parameter_AzureSqlDatabase_Connection')]"
 			]
 		},
 		{
@@ -1447,502 +1609,6 @@
 				"[concat(variables('factoryId'), '/datasets/OnpremiseSqlServer')]",
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]",
 				"[concat(variables('factoryId'), '/datasets/BlobOnpremiseFiles')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_MovBlob2Azure_Using_Existing')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Blob_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Blobfilesoutput"
-						},
-						{
-							"dataset": {
-								"referenceName": "AzureSQLDBQuery",
-								"type": "DatasetReference"
-							},
-							"name": "ADFSoriceforCache"
-						},
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Azure_DB_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GettingMaxID"
-						}
-					],
-					"sinks": [
-						{
-							"name": "CacheSink"
-						},
-						{
-							"name": "CachingMaxID"
-						},
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Azure_DB_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "UpdatingSink"
-						},
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Azure_DB_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "InsertingintoSink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ChickingExitingConditions"
-						},
-						{
-							"name": "alterRowUpdate"
-						},
-						{
-							"name": "surrogateKey1"
-						},
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          {S No#} as integer,",
-						"          {Value Date} as string,",
-						"          {Transaction Date} as string,",
-						"          {Cheque Number} as string,",
-						"          {Transaction Remarks} as string,",
-						"          {Withdrawal Amount (INR )} as double,",
-						"          {Deposit Amount (INR )} as double,",
-						"          {Balance (INR )} as double",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     limit: 10,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'delimited',",
-						"     container: 'onpremisefiles',",
-						"     folderPath: '2022-03-10',",
-						"     fileName: 'Daytransactions_2022-03-10.csv',",
-						"     columnDelimiter: ',',",
-						"     escapeChar: '\\\\',",
-						"     quoteChar: '\\\"',",
-						"     columnNamesAsHeader: true) ~> Blobfilesoutput",
-						"source(output(",
-						"          {S No#} as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
-						"     format: 'query') ~> ADFSoriceforCache",
-						"source(output(",
-						"          Max_RowID as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'query',",
-						"     store: 'sqlserver',",
-						"     query: 'select isnull(max(Row_Id),0) as Max_RowID from [dbo].[BanktransactionDetail]',",
-						"     isolationLevel: 'READ_UNCOMMITTED') ~> GettingMaxID",
-						"Blobfilesoutput split(!isNull(CacheSink#lookup({S No#})),",
-						"     disjoint: false) ~> ChickingExitingConditions@(Existing, nonExisting)",
-						"ChickingExitingConditions@Existing alterRow(updateIf(equals(1,1))) ~> alterRowUpdate",
-						"ChickingExitingConditions@nonExisting keyGenerate(output(key_surrogate as long),",
-						"     startAt: 1L) ~> surrogateKey1",
-						"surrogateKey1 derive(key_surrogate_newcolm = CachingMaxID#outputs()[1].Max_RowID+key_surrogate,",
-						"          Month = month(currentDate({Transaction Date})),",
-						"          year = year(currentDate({Transaction Date}))) ~> derivedColumn1",
-						"ADFSoriceforCache sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     keys:['S No#'],",
-						"     store: 'cache',",
-						"     format: 'inline',",
-						"     output: false,",
-						"     saveOrder: 0,",
-						"     mapColumn(",
-						"          {S No#}",
-						"     )) ~> CacheSink",
-						"GettingMaxID sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     store: 'cache',",
-						"     format: 'inline',",
-						"     output: false,",
-						"     saveOrder: 0,",
-						"     mapColumn(",
-						"          Max_RowID",
-						"     )) ~> CachingMaxID",
-						"alterRowUpdate sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'table',",
-						"     store: 'sqlserver',",
-						"     schemaName: 'dbo',",
-						"     tableName: 'BanktransactionDetail',",
-						"     insertable: false,",
-						"     updateable: true,",
-						"     deletable: false,",
-						"     upsertable: false,",
-						"     keys:['S No#'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          {S No#},",
-						"          {Value Date},",
-						"          {Transaction Date},",
-						"          {Cheque Number},",
-						"          {Transaction Remarks},",
-						"          {Withdrawal Amount (INR )},",
-						"          {Deposit Amount (INR )},",
-						"          {Balance (INR )}",
-						"     )) ~> UpdatingSink",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          {S No#} as integer,",
-						"          {Value Date} as string,",
-						"          {Transaction Date} as string,",
-						"          {Cheque Number} as string,",
-						"          {Transaction Remarks} as string,",
-						"          {Withdrawal Amount (INR )} as decimal(32,10),",
-						"          {Deposit Amount (INR )} as decimal(32,10),",
-						"          {Balance (INR )} as decimal(32,10),",
-						"          Row_Id as integer,",
-						"          Trn_Year as integer,",
-						"          Trn_Month as string",
-						"     ),",
-						"     format: 'table',",
-						"     store: 'sqlserver',",
-						"     schemaName: 'dbo',",
-						"     tableName: 'BanktransactionDetail',",
-						"     insertable: true,",
-						"     updateable: false,",
-						"     deletable: false,",
-						"     upsertable: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          {S No#},",
-						"          {Value Date},",
-						"          {Transaction Date},",
-						"          {Cheque Number},",
-						"          {Transaction Remarks},",
-						"          {Withdrawal Amount (INR )},",
-						"          {Deposit Amount (INR )},",
-						"          {Balance (INR )},",
-						"          Row_Id = key_surrogate_newcolm,",
-						"          Trn_Year = year,",
-						"          Trn_Month = Month",
-						"     )) ~> InsertingintoSink"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_MovBlob2Azure_usingAlterrow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Blob_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "Blobfilesoutput"
-						},
-						{
-							"dataset": {
-								"referenceName": "AzureSQLDBQuery",
-								"type": "DatasetReference"
-							},
-							"name": "ADFSoriceforCache"
-						},
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Azure_DB_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "GettingMaxID"
-						}
-					],
-					"sinks": [
-						{
-							"name": "CacheSink"
-						},
-						{
-							"linkedService": {
-								"referenceName": "OPI_DMRO_Azure_DB_Connection",
-								"type": "LinkedServiceReference"
-							},
-							"name": "LoadingtoAzure"
-						},
-						{
-							"name": "CachingMaxID"
-						}
-					],
-					"transformations": [
-						{
-							"name": "AlterRowData"
-						},
-						{
-							"name": "genetatingRowKey"
-						},
-						{
-							"name": "RowIDSurrogate"
-						},
-						{
-							"name": "FilterindDummyColumns"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          {S No#} as integer,",
-						"          {Value Date} as string,",
-						"          {Transaction Date} as string,",
-						"          {Cheque Number} as string,",
-						"          {Transaction Remarks} as string,",
-						"          {Withdrawal Amount (INR )} as double,",
-						"          {Deposit Amount (INR )} as double,",
-						"          {Balance (INR )} as double",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     limit: 10,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'delimited',",
-						"     container: 'onpremisefiles',",
-						"     folderPath: '2022-03-10',",
-						"     fileName: 'Daytransactions_2022-03-10.csv',",
-						"     columnDelimiter: ',',",
-						"     escapeChar: '\\\\',",
-						"     quoteChar: '\\\"',",
-						"     columnNamesAsHeader: true) ~> Blobfilesoutput",
-						"source(output(",
-						"          {S No#} as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: 'select  [S No#]\\nfrom [dbo].[BanktransactionDetail]',",
-						"     format: 'query') ~> ADFSoriceforCache",
-						"source(output(",
-						"          Max_RowID as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'query',",
-						"     store: 'sqlserver',",
-						"     query: 'select isnull(max(Row_Id),0) as Max_RowID from [dbo].[BanktransactionDetail]',",
-						"     isolationLevel: 'READ_UNCOMMITTED') ~> GettingMaxID",
-						"Blobfilesoutput alterRow(updateIf(!isNull(CacheSink#lookup({S No#})))) ~> AlterRowData",
-						"RowIDSurrogate derive(RowKey = CachingMaxID#outputs()[1].Max_RowID + RowIDSurrogate_key) ~> genetatingRowKey",
-						"AlterRowData keyGenerate(output(RowIDSurrogate_key as long),",
-						"     startAt: 1L) ~> RowIDSurrogate",
-						"genetatingRowKey select(mapColumn(",
-						"          {S No#},",
-						"          {Value Date},",
-						"          {Transaction Date},",
-						"          {Cheque Number},",
-						"          {Transaction Remarks},",
-						"          {Withdrawal Amount (INR )},",
-						"          {Deposit Amount (INR )},",
-						"          {Balance (INR )},",
-						"          RowKey",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> FilterindDummyColumns",
-						"ADFSoriceforCache sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     keys:['S No#'],",
-						"     store: 'cache',",
-						"     format: 'inline',",
-						"     output: false,",
-						"     saveOrder: 1,",
-						"     mapColumn(",
-						"          {S No#}",
-						"     )) ~> CacheSink",
-						"FilterindDummyColumns sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          {S No#} as integer,",
-						"          {Value Date} as string,",
-						"          {Transaction Date} as string,",
-						"          {Cheque Number} as string,",
-						"          {Transaction Remarks} as string,",
-						"          {Withdrawal Amount (INR )} as decimal(32,10),",
-						"          {Deposit Amount (INR )} as decimal(32,10),",
-						"          {Balance (INR )} as decimal(32,10),",
-						"          Row_Id as integer",
-						"     ),",
-						"     format: 'table',",
-						"     store: 'sqlserver',",
-						"     schemaName: 'dbo',",
-						"     tableName: 'BanktransactionDetail',",
-						"     insertable: true,",
-						"     updateable: true,",
-						"     deletable: false,",
-						"     upsertable: false,",
-						"     keys:['S No#'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          {S No#},",
-						"          {Value Date},",
-						"          {Transaction Date},",
-						"          {Cheque Number},",
-						"          {Transaction Remarks},",
-						"          {Withdrawal Amount (INR )},",
-						"          {Deposit Amount (INR )},",
-						"          {Balance (INR )},",
-						"          Row_Id = RowKey",
-						"     )) ~> LoadingtoAzure",
-						"GettingMaxID sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     store: 'cache',",
-						"     format: 'inline',",
-						"     output: false,",
-						"     saveOrder: 1,",
-						"     mapColumn(",
-						"          Max_RowID",
-						"     )) ~> CachingMaxID"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
-				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/P_DF_LoadingDatatoAzure')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "df_loadingAzure_incremental",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_MovBlob2Azure_usingAlterrow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Blobfilesoutput": {},
-									"ADFSoriceforCache": {},
-									"GettingMaxID": {},
-									"CacheSink": {},
-									"LoadingtoAzure": {},
-									"CachingMaxID": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_MovBlob2Azure_usingAlterrow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/P_DF_LoadingDatatoAzure_Exisitng')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "df_loadingAzure_incremental",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_MovBlob2Azure_Using_Existing",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"Blobfilesoutput": {},
-									"ADFSoriceforCache": {},
-									"GettingMaxID": {},
-									"CacheSink": {},
-									"CachingMaxID": {},
-									"UpdatingSink": {},
-									"InsertingintoSink": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_MovBlob2Azure_Using_Existing')]"
 			]
 		}
 	]
