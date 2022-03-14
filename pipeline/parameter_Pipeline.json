@@ -153,10 +153,6 @@
 							"folderpath": {
 								"value": "@pipeline().parameters.pipe_folderpath",
 								"type": "Expression"
-							},
-							"filepath": {
-								"value": "@pipeline().parameters.Pipe_filepath",
-								"type": "Expression"
 							}
 						}
 					}
