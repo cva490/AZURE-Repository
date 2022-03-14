@@ -2280,9 +2280,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "S No#",
-											"type": "Int32",
-											"physicalType": "int"
+											"name": "S No#"
 										}
 									},
 									{
@@ -2292,9 +2290,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Value Date",
-											"type": "String",
-											"physicalType": "nvarchar"
+											"name": "Value Date"
 										}
 									},
 									{
@@ -2304,9 +2300,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Transaction Date",
-											"type": "String",
-											"physicalType": "nvarchar"
+											"name": "Transaction Date"
 										}
 									},
 									{
@@ -2316,9 +2310,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Cheque Number",
-											"type": "String",
-											"physicalType": "varchar"
+											"name": "Cheque Number"
 										}
 									},
 									{
@@ -2328,9 +2320,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Transaction Remarks",
-											"type": "String",
-											"physicalType": "varchar"
+											"name": "Transaction Remarks"
 										}
 									},
 									{
@@ -2340,11 +2330,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Withdrawal Amount (INR )",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 10,
-											"precision": 32
+											"name": "Withdrawal Amount (INR )"
 										}
 									},
 									{
@@ -2354,11 +2340,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Deposit Amount (INR )",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 10,
-											"precision": 32
+											"name": "Deposit Amount (INR )"
 										}
 									},
 									{
@@ -2368,11 +2350,7 @@
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "Balance (INR )",
-											"type": "Decimal",
-											"physicalType": "decimal",
-											"scale": 10,
-											"precision": 32
+											"name": "Balance (INR )"
 										}
 									}
 								],
