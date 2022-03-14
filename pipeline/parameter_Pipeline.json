@@ -165,7 +165,13 @@
 				"outputs": [
 					{
 						"referenceName": "parameter_Dataset_AzureSQLDB",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": {
+								"value": "@pipeline().parameters.Pipe_TableName",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
