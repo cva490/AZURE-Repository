@@ -2104,6 +2104,14 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"parameters": {
+					"SeverName": {
+						"type": "String"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
@@ -2129,7 +2137,28 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "Parameter_AzureSqlDatabase_Connection",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"SeverName": {
+							"value": "@dataset().ds_ServeName",
+							"type": "Expression"
+						},
+						"DBName": {
+							"value": "@dataset().ds_DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					},
+					"ds_ServeName": {
+						"type": "String"
+					},
+					"ds_DBName": {
+						"type": "String"
+					}
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -2190,7 +2219,10 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "BanktransactionDetail"
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
 				}
 			},
 			"dependsOn": [
@@ -2221,6 +2253,11 @@
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().parameters.pipe_folderpath",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*csv",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -2354,10 +2391,6 @@
 									"folderpath": {
 										"value": "@pipeline().parameters.pipe_folderpath",
 										"type": "Expression"
-									},
-									"filepath": {
-										"value": "@pipeline().parameters.Pipe_filepath",
-										"type": "Expression"
 									}
 								}
 							}
@@ -2366,7 +2399,20 @@
 							{
 								"referenceName": "parameter_Dataset_AzureSQLDB",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.Pipe_TableName",
+										"type": "Expression"
+									},
+									"ds_ServeName": {
+										"value": "@pipeline().parameters.Pipe_ServerName",
+										"type": "Expression"
+									},
+									"ds_DBName": {
+										"value": "@pipeline().parameters.Pipe_DBName",
+										"type": "Expression"
+									}
+								}
 							}
 						]
 					}
@@ -2377,10 +2423,20 @@
 				},
 				"parameters": {
 					"pipe_folderpath": {
-						"type": "String"
+						"type": "String",
+						"defaultValue": "2022-03-10"
 					},
-					"Pipe_filepath": {
-						"type": "String"
+					"Pipe_ServerName": {
+						"type": "string",
+						"defaultValue": "azsqlsrvopidmro"
+					},
+					"Pipe_DBName": {
+						"type": "string",
+						"defaultValue": "azssqldbopidmro"
+					},
+					"Pipe_TableName": {
+						"type": "string",
+						"defaultValue": "BanktransactionDetail"
 					}
 				},
 				"annotations": []
@@ -2415,9 +2471,6 @@
 				"parameters": {
 					"folderpath": {
 						"type": "String"
-					},
-					"filepath": {
-						"type": "String"
 					}
 				},
 				"annotations": [],
@@ -2425,10 +2478,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().filepath",
-							"type": "Expression"
-						},
 						"folderPath": {
 							"value": "@dataset().folderpath",
 							"type": "Expression"

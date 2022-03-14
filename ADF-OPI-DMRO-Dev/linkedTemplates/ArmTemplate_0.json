@@ -369,6 +369,14 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"parameters": {
+					"SeverName": {
+						"type": "String"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
@@ -399,9 +407,6 @@
 				"parameters": {
 					"folderpath": {
 						"type": "String"
-					},
-					"filepath": {
-						"type": "String"
 					}
 				},
 				"annotations": [],
@@ -409,10 +414,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().filepath",
-							"type": "Expression"
-						},
 						"folderPath": {
 							"value": "@dataset().folderpath",
 							"type": "Expression"
@@ -508,7 +509,28 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "Parameter_AzureSqlDatabase_Connection",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"SeverName": {
+							"value": "@dataset().ds_ServeName",
+							"type": "Expression"
+						},
+						"DBName": {
+							"value": "@dataset().ds_DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					},
+					"ds_ServeName": {
+						"type": "String"
+					},
+					"ds_DBName": {
+						"type": "String"
+					}
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -569,7 +591,10 @@
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "BanktransactionDetail"
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
 				}
 			},
 			"dependsOn": [
