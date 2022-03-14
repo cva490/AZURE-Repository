@@ -37,8 +37,9 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "S No#",
 									"type": "String",
-									"ordinal": 1
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "S No#",
@@ -48,8 +49,9 @@
 							},
 							{
 								"source": {
+									"name": "Value Date",
 									"type": "String",
-									"ordinal": 2
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Value Date",
@@ -59,8 +61,9 @@
 							},
 							{
 								"source": {
+									"name": "Transaction Date",
 									"type": "String",
-									"ordinal": 3
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Transaction Date",
@@ -70,8 +73,9 @@
 							},
 							{
 								"source": {
+									"name": "Cheque Number",
 									"type": "String",
-									"ordinal": 4
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Cheque Number",
@@ -81,8 +85,9 @@
 							},
 							{
 								"source": {
+									"name": "Transaction Remarks",
 									"type": "String",
-									"ordinal": 5
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Transaction Remarks",
@@ -92,8 +97,9 @@
 							},
 							{
 								"source": {
+									"name": "Withdrawal Amount (INR )",
 									"type": "String",
-									"ordinal": 6
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Withdrawal Amount (INR )",
@@ -105,8 +111,9 @@
 							},
 							{
 								"source": {
+									"name": "Deposit Amount (INR )",
 									"type": "String",
-									"ordinal": 7
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Deposit Amount (INR )",
@@ -118,8 +125,9 @@
 							},
 							{
 								"source": {
+									"name": "Balance (INR )",
 									"type": "String",
-									"ordinal": 8
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "Balance (INR )",
@@ -127,27 +135,6 @@
 									"physicalType": "decimal",
 									"scale": 10,
 									"precision": 32
-								}
-							},
-							{
-								"sink": {
-									"name": "Row_Id",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"sink": {
-									"name": "Trn_Year",
-									"type": "Int32",
-									"physicalType": "int"
-								}
-							},
-							{
-								"sink": {
-									"name": "Trn_Month",
-									"type": "String",
-									"physicalType": "varchar"
 								}
 							}
 						],
