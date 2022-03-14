@@ -1,0 +1,70 @@
+{
+	"name": "parameter_Dataset_AzureSQLDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Parameter_AzureSqlDatabase_Connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "S No#",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Value Date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Transaction Date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Cheque Number",
+				"type": "varchar"
+			},
+			{
+				"name": "Transaction Remarks",
+				"type": "varchar"
+			},
+			{
+				"name": "Withdrawal Amount (INR )",
+				"type": "decimal",
+				"precision": 32,
+				"scale": 10
+			},
+			{
+				"name": "Deposit Amount (INR )",
+				"type": "decimal",
+				"precision": 32,
+				"scale": 10
+			},
+			{
+				"name": "Balance (INR )",
+				"type": "decimal",
+				"precision": 32,
+				"scale": 10
+			},
+			{
+				"name": "Row_Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Trn_Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Trn_Month",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "BanktransactionDetail"
+		}
+	}
+}
