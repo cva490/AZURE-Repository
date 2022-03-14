@@ -176,6 +176,12 @@
 		"parameters": {
 			"pipe_folderpath": {
 				"type": "String"
+			},
+			"Pipe_ServerName": {
+				"type": "string"
+			},
+			"Pipe_DBName": {
+				"type": "string"
 			}
 		},
 		"annotations": []
