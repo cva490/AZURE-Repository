@@ -899,7 +899,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlServerSource",
-								"sqlReaderQuery": "\nselect  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+								"sqlReaderQuery": "declare @sql nvarchar(max)\t\nselect @sql=Query from dbo.controltable where pipelinename='P_OnpremisetoBlob'\nexec(@sql)",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
@@ -1261,6 +1261,201 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().parameters.pipe_folderpath",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "S No#",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "S No#"
+										}
+									},
+									{
+										"source": {
+											"name": "Value Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Value Date"
+										}
+									},
+									{
+										"source": {
+											"name": "Transaction Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Transaction Date"
+										}
+									},
+									{
+										"source": {
+											"name": "Cheque Number",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Cheque Number"
+										}
+									},
+									{
+										"source": {
+											"name": "Transaction Remarks",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Transaction Remarks"
+										}
+									},
+									{
+										"source": {
+											"name": "Withdrawal Amount (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Withdrawal Amount (INR )"
+										}
+									},
+									{
+										"source": {
+											"name": "Deposit Amount (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Deposit Amount (INR )"
+										}
+									},
+									{
+										"source": {
+											"name": "Balance (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Balance (INR )"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "parameter_dataset_blob",
+								"type": "DatasetReference",
+								"parameters": {
+									"folderpath": {
+										"value": "@pipeline().parameters.pipe_folderpath",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "parameter_Dataset_AzureSQLDB",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.Pipe_TableName",
+										"type": "Expression"
+									},
+									"ds_ServeName": {
+										"value": "@pipeline().parameters.Pipe_ServerName",
+										"type": "Expression"
+									},
+									"ds_DBName": {
+										"value": "@pipeline().parameters.Pipe_DBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pipe_folderpath": {
+						"type": "String",
+						"defaultValue": "2022-03-10"
+					},
+					"Pipe_ServerName": {
+						"type": "string",
+						"defaultValue": "azsqlsrvopidmro"
+					},
+					"Pipe_DBName": {
+						"type": "string",
+						"defaultValue": "azssqldbopidmro"
+					},
+					"Pipe_TableName": {
+						"type": "string",
+						"defaultValue": "BanktransactionDetail"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/parameter_dataset_blob')]",
+				"[concat(variables('factoryId'), '/datasets/parameter_Dataset_AzureSQLDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSQLDB')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1555,6 +1750,141 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Dataset_AzureSQLDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Parameter_AzureSqlDatabase_Connection",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"SeverName": {
+							"value": "@dataset().ds_ServeName",
+							"type": "Expression"
+						},
+						"DBName": {
+							"value": "@dataset().ds_DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					},
+					"ds_ServeName": {
+						"type": "String"
+					},
+					"ds_DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "S No#",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Value Date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Transaction Date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Cheque Number",
+						"type": "varchar"
+					},
+					{
+						"name": "Transaction Remarks",
+						"type": "varchar"
+					},
+					{
+						"name": "Withdrawal Amount (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Deposit Amount (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Balance (INR )",
+						"type": "decimal",
+						"precision": 32,
+						"scale": 10
+					},
+					{
+						"name": "Row_Id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Trn_Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Trn_Month",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Parameter_AzureSqlDatabase_Connection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_dataset_blob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "parameter_Blob_Connection",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"folderpath": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().folderpath",
+							"type": "Expression"
+						},
+						"container": "onpremisefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/parameter_Blob_Connection')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureKeyVaultConnection')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1635,6 +1965,50 @@
 				"[concat(variables('factoryId'), '/integrationRuntimes/OPI-DMRO-Onpremise-IR')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parameter_AzureSqlDatabase_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"SeverName": {
+						"type": "String"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('Parameter_AzureSqlDatabase_Connection_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVaultConnection",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "Password"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Blob_Connection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('parameter_Blob_Connection_connectionString')]"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/tgr-blobtoazure-event')]",
@@ -2097,380 +2471,6 @@
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Blob_Connection')]",
 				"[concat(variables('factoryId'), '/datasets/AzureSQLDBQuery')]",
 				"[concat(variables('factoryId'), '/linkedServices/OPI_DMRO_Azure_DB_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Parameter_AzureSqlDatabase_Connection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"SeverName": {
-						"type": "String"
-					},
-					"DBName": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('Parameter_AzureSqlDatabase_Connection_connectionString')]",
-					"password": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVaultConnection",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "Password"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVaultConnection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/parameter_Dataset_AzureSQLDB')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Parameter_AzureSqlDatabase_Connection",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"SeverName": {
-							"value": "@dataset().ds_ServeName",
-							"type": "Expression"
-						},
-						"DBName": {
-							"value": "@dataset().ds_DBName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"TableName": {
-						"type": "String"
-					},
-					"ds_ServeName": {
-						"type": "String"
-					},
-					"ds_DBName": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "S No#",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Value Date",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Transaction Date",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Cheque Number",
-						"type": "varchar"
-					},
-					{
-						"name": "Transaction Remarks",
-						"type": "varchar"
-					},
-					{
-						"name": "Withdrawal Amount (INR )",
-						"type": "decimal",
-						"precision": 32,
-						"scale": 10
-					},
-					{
-						"name": "Deposit Amount (INR )",
-						"type": "decimal",
-						"precision": 32,
-						"scale": 10
-					},
-					{
-						"name": "Balance (INR )",
-						"type": "decimal",
-						"precision": 32,
-						"scale": 10
-					},
-					{
-						"name": "Row_Id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Trn_Year",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Trn_Month",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Parameter_AzureSqlDatabase_Connection')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/parameter_Pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().parameters.pipe_folderpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*csv",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "S No#",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "S No#"
-										}
-									},
-									{
-										"source": {
-											"name": "Value Date",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Value Date"
-										}
-									},
-									{
-										"source": {
-											"name": "Transaction Date",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Transaction Date"
-										}
-									},
-									{
-										"source": {
-											"name": "Cheque Number",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Cheque Number"
-										}
-									},
-									{
-										"source": {
-											"name": "Transaction Remarks",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Transaction Remarks"
-										}
-									},
-									{
-										"source": {
-											"name": "Withdrawal Amount (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Withdrawal Amount (INR )"
-										}
-									},
-									{
-										"source": {
-											"name": "Deposit Amount (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Deposit Amount (INR )"
-										}
-									},
-									{
-										"source": {
-											"name": "Balance (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Balance (INR )"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "parameter_dataset_blob",
-								"type": "DatasetReference",
-								"parameters": {
-									"folderpath": {
-										"value": "@pipeline().parameters.pipe_folderpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "parameter_Dataset_AzureSQLDB",
-								"type": "DatasetReference",
-								"parameters": {
-									"TableName": {
-										"value": "@pipeline().parameters.Pipe_TableName",
-										"type": "Expression"
-									},
-									"ds_ServeName": {
-										"value": "@pipeline().parameters.Pipe_ServerName",
-										"type": "Expression"
-									},
-									"ds_DBName": {
-										"value": "@pipeline().parameters.Pipe_DBName",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"pipe_folderpath": {
-						"type": "String",
-						"defaultValue": "2022-03-10"
-					},
-					"Pipe_ServerName": {
-						"type": "string",
-						"defaultValue": "azsqlsrvopidmro"
-					},
-					"Pipe_DBName": {
-						"type": "string",
-						"defaultValue": "azssqldbopidmro"
-					},
-					"Pipe_TableName": {
-						"type": "string",
-						"defaultValue": "BanktransactionDetail"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/parameter_dataset_blob')]",
-				"[concat(variables('factoryId'), '/datasets/parameter_Dataset_AzureSQLDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/parameter_Blob_Connection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('parameter_Blob_Connection_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/parameter_dataset_blob')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "parameter_Blob_Connection",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"folderpath": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().folderpath",
-							"type": "Expression"
-						},
-						"container": "onpremisefiles"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/parameter_Blob_Connection')]"
 			]
 		}
 	]

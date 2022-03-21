@@ -21,6 +21,198 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/parameter_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": {
+										"value": "@pipeline().parameters.pipe_folderpath",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "S No#",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "S No#"
+										}
+									},
+									{
+										"source": {
+											"name": "Value Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Value Date"
+										}
+									},
+									{
+										"source": {
+											"name": "Transaction Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Transaction Date"
+										}
+									},
+									{
+										"source": {
+											"name": "Cheque Number",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Cheque Number"
+										}
+									},
+									{
+										"source": {
+											"name": "Transaction Remarks",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Transaction Remarks"
+										}
+									},
+									{
+										"source": {
+											"name": "Withdrawal Amount (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Withdrawal Amount (INR )"
+										}
+									},
+									{
+										"source": {
+											"name": "Deposit Amount (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Deposit Amount (INR )"
+										}
+									},
+									{
+										"source": {
+											"name": "Balance (INR )",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Balance (INR )"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "parameter_dataset_blob",
+								"type": "DatasetReference",
+								"parameters": {
+									"folderpath": {
+										"value": "@pipeline().parameters.pipe_folderpath",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "parameter_Dataset_AzureSQLDB",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.Pipe_TableName",
+										"type": "Expression"
+									},
+									"ds_ServeName": {
+										"value": "@pipeline().parameters.Pipe_ServerName",
+										"type": "Expression"
+									},
+									"ds_DBName": {
+										"value": "@pipeline().parameters.Pipe_DBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pipe_folderpath": {
+						"type": "String",
+						"defaultValue": "2022-03-10"
+					},
+					"Pipe_ServerName": {
+						"type": "string",
+						"defaultValue": "azsqlsrvopidmro"
+					},
+					"Pipe_DBName": {
+						"type": "string",
+						"defaultValue": "azssqldbopidmro"
+					},
+					"Pipe_TableName": {
+						"type": "string",
+						"defaultValue": "BanktransactionDetail"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_MovBlob2Azure_Using_Existing')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -402,198 +594,6 @@
 						"     )) ~> CachingMaxID"
 					]
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/parameter_Pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy data",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().parameters.pipe_folderpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*csv",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "S No#",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "S No#"
-										}
-									},
-									{
-										"source": {
-											"name": "Value Date",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Value Date"
-										}
-									},
-									{
-										"source": {
-											"name": "Transaction Date",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Transaction Date"
-										}
-									},
-									{
-										"source": {
-											"name": "Cheque Number",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Cheque Number"
-										}
-									},
-									{
-										"source": {
-											"name": "Transaction Remarks",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Transaction Remarks"
-										}
-									},
-									{
-										"source": {
-											"name": "Withdrawal Amount (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Withdrawal Amount (INR )"
-										}
-									},
-									{
-										"source": {
-											"name": "Deposit Amount (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Deposit Amount (INR )"
-										}
-									},
-									{
-										"source": {
-											"name": "Balance (INR )",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Balance (INR )"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "parameter_dataset_blob",
-								"type": "DatasetReference",
-								"parameters": {
-									"folderpath": {
-										"value": "@pipeline().parameters.pipe_folderpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "parameter_Dataset_AzureSQLDB",
-								"type": "DatasetReference",
-								"parameters": {
-									"TableName": {
-										"value": "@pipeline().parameters.Pipe_TableName",
-										"type": "Expression"
-									},
-									"ds_ServeName": {
-										"value": "@pipeline().parameters.Pipe_ServerName",
-										"type": "Expression"
-									},
-									"ds_DBName": {
-										"value": "@pipeline().parameters.Pipe_DBName",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"pipe_folderpath": {
-						"type": "String",
-						"defaultValue": "2022-03-10"
-					},
-					"Pipe_ServerName": {
-						"type": "string",
-						"defaultValue": "azsqlsrvopidmro"
-					},
-					"Pipe_DBName": {
-						"type": "string",
-						"defaultValue": "azssqldbopidmro"
-					},
-					"Pipe_TableName": {
-						"type": "string",
-						"defaultValue": "BanktransactionDetail"
-					}
-				},
-				"annotations": []
 			},
 			"dependsOn": []
 		},
