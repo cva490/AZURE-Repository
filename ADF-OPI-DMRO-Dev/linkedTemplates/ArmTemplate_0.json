@@ -1311,7 +1311,7 @@
 							"scripts": [
 								{
 									"type": "Query",
-									"text": "delete\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,cast([Transaction Date] as date))=cast(getdate() as date)\n"
+									"text": "declare @sql nvarchar(max)\t\nselect @sql=Query from dbo.controltable where pipelinename='P_BlobtoAzureDB' and activity='Delete-DeletingCurrentdayrecords'\nexec(@sql)"
 								}
 							]
 						}
