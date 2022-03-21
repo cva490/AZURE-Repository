@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "declare @sql nvarchar(max)\t\nselect @sql=Query from dbo.controltable where pipelinename='P_OnpremisetoBlob'\nexec(@sql)",
+						"sqlReaderQuery": "declare @sql nvarchar(max)\t\nselect @sql=Query from dbo.controltable where pipelinename='P_OnpremisetoBlob' and activity='lookup-hasdata'\nexec(@sql)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
