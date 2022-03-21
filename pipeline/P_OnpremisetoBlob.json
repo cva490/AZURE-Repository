@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "\nselect  Count(1) as RecordCount\nfrom [dbo].[BanktransactionDetail]\nwhere dateadd(day,365,convert(date,[Transaction Date],105))=convert(date,getdate(),105)",
+						"sqlReaderQuery": "declare @sql nvarchar(max)\t\nselect @sql=Query from dbo.controltable where pipelinename='P_OnpremisetoBlob'\nexec(@sql)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
